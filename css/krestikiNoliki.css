@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&family=Bowlby+One+SC&family=Pacifico&family=Raleway:ital,wght@0,100..900;1,100..900&family=Tiny5&display=swap');
+
+.value{
+    margin-left: 40%;
+    margin-top: 10%;
+    display: grid;
+    grid-template-columns: 100px 100px 100px;
+    grid-template-rows: 100px 100px 100px;
+}
+
+.slot{
+    border: 1px solid black;
+    text-align: center;
+    font-size: xx-large;
+    padding-top: 25%;
+    font-family: "Bona Nova SC", serif;
+}
+
+.slot:hover{
+    background-color: rgb(223, 219, 219);
+}

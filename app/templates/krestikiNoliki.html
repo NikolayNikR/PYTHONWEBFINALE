@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="krestikiNoliki.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/krestikiNoliki.css') }}">
 </head>
 <body>
     <div class="value" id="board">
@@ -18,6 +18,6 @@
         <div class="slot" data-num="8"></div>
         <div class="slot" data-num="9"></div>
     </div>
-    <script src="krestikiNoliki.js"></script>
+    <script src="{{ url_for('static', filename='js/krestikiNoliki.js') }}"></script>
 </body>
 </html>
