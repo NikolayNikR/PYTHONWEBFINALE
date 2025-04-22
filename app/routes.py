@@ -1,4 +1,5 @@
 from sqlalchemy.sql.functions import random
+import json
 
 from app import app
 from flask import render_template, flash, redirect, url_for
@@ -13,16 +14,16 @@ from flask_login import current_user, login_user, logout_user, login_required
 
 def code():
     random_room = random.randint(10000, 99999)
-    return  random_room
+    return random_room
 
 
-rooms = {}
+rooms = []
 
 
 @app.route('/index')
 @app.route('/')
 def index():
-    return render_template("menu.html")
+    return redirect("menu.html")
 
 
 @app.route('/createrooms')
@@ -34,6 +35,14 @@ def game():
                      ['', '', ''],
                      ['', '', '']
                  ]}
-    rooms.update(game_room)
+
+    rooms.append(game_room)
+
+    with open("trade.json", "w", encoding="utf-8") as json_file:
+        json.dump(rooms, json_file, ensure_ascii=False)
+
     print(rooms)
     return render_template("krestikiNoliki.html")
+
+
+
