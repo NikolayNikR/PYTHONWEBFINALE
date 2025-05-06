@@ -5,7 +5,7 @@ from sqlalchemy.sql.functions import random
 import json
 
 from app import app
-from flask import render_template, Flask, redirect, url_for, request
+from flask import render_template, Flask, redirect, url_for, request, jsonify
 import random
 
 
@@ -26,7 +26,7 @@ rooms = load_rooms()
 
 def code():
     random_room = random.randint(10000, 99999)
-    return random_room
+    return str(random_room)
 
 
 @app.route('/index')
@@ -51,9 +51,10 @@ def creategame():
 
 @app.route('/join', methods=['POST'])
 def join_room():
-    room_code = request.form['room_code']
-    if room_code in rooms:
+    key = request.form['room_code']
+    if key in rooms:
         return redirect(url_for('room', room_code=key))
+    return "Комната не найдена", 404
 
 
 @app.route('/room/<room_code>')
@@ -61,3 +62,19 @@ def room(room_code):
     if room_code not in rooms:
         return "Комната не найдена", 404
     return render_template('krestikiNoliki.html', room_code=room_code)
+
+
+@app.route('/api/room/<room_code>')
+def button_state(room_code):
+    if room_code not in rooms:
+        return jsonify({"error": "Комната не найдена"}), 404
+    return jsonify({'board': rooms[room_code]['board']})
+
+
+@app.route('/api/room/<room_code>', methods=['POST'])
+def toggle_button(room_code):
+    if room_code not in rooms:
+        return jsonify({"error": "Комната не найдена"}), 404
+    rooms[room_code]['board'] = not rooms[room_code]['board']
+    save_rooms()
+    return jsonify({'board': rooms[room_code]['board']})
