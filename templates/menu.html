@@ -13,8 +13,10 @@
             </form>
 
         <br>
-        <button class="join"> join room </button>
-        <input type="text" class="join room" maxlength="5" placeholder="code">
+        <form action="/join" method="post">
+            <button class="join"> join room </button>
+            <input type="text" name="room_code" class="join room" maxlength="5" placeholder="code">
+        </form>
     </div>
 </body>
 </html>

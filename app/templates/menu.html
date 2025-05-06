@@ -8,10 +8,15 @@
 </head>
 <body>
     <div class="buttons">
-        <a href="/createrooms"><button class="create">create room</button></a>
+            <form  action="/create" method="POST">
+                <button class="create">create room</button>
+            </form>
+
         <br>
-        <button class="join"> join room </button>
-        <input type="text" class="join room" maxlength="5" placeholder="code">
+        <form action="/join" method="post">
+            <button class="join"> join room </button>
+            <input type="text" name="room_code" class="join room" maxlength="5" placeholder="code">
+        </form>
     </div>
 </body>
 </html>
