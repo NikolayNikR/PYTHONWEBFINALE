@@ -1,19 +1,50 @@
+const roomCode = document.querySelector('#game').dataset.roomCode; // например, <div id="game" data-room-code="{{ room_code }}"></div>
+
 const board = document.querySelector('.value');
-let count = 0;
+let count = 0; // Можно инициализировать с сервера, если нужно
 
+board.addEventListener("click", async function(e) {
+  if (e.target.classList.contains("slot") && e.target.textContent === '') {
+    const index = parseInt(e.target.dataset.num); // data-num от 0 до 8
+    const playerSymbol = count % 2 === 0 ? 'X' : '0';
 
-board.addEventListener("click", function(e) {
-  if (e.target.className=="slot") {
-    if (e.target.textContent == '' & count%2 == 0){
-        e.target.innerHTML = 'X';
-        count += 1;
-    } else if (e.target.textContent == '' & count%2 != 0){
-        e.target.innerHTML = '0';
-        count += 1;
-    };
-  };
-  chek()
+    try {
+      const response = await fetch(`/api/room/${roomCode}/move`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ index: index, symbol: playerSymbol })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.error || 'Ошибка при отправке хода');
+        return;
+      }
+
+      const data = await response.json();
+      updateBoard(data.board);
+      count += 1;
+
+      if (data.winner) {
+        alert(`Победил игрок ${data.winner}`);
+        // Можно заблокировать дальнейшие ходы или предложить начать новую игру
+      }
+
+    } catch (err) {
+      alert('Ошибка соединения с сервером');
+      console.error(err);
+    }
+  }
 });
+
+function updateBoard(boardArray) {
+  for (let i = 0; i < 9; i++) {
+    const row = Math.floor(i / 3);
+    const col = i % 3;
+    const cell = document.querySelector(`.slot[data-num='${i}']`);
+    cell.textContent = boardArray[row][col];
+  }
+}
 
 
 
