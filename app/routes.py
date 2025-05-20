@@ -8,6 +8,8 @@ import json
 from app import app
 from flask import render_template, Flask, redirect, url_for, request, jsonify
 import random
+from flask import session
+import uuid
 
 
 def chek(code):
@@ -71,7 +73,9 @@ def creategame():
                           ['', '', ''],
                           ['', '', ''],
                           ['', '', '']
-                      ]}
+                      ],
+                      'current_turn': 'X'  # начинаем с X
+                      }
         save_rooms()
         return redirect(url_for('room', room_code=key))
 
@@ -85,10 +89,14 @@ def join_room():
 
 
 @app.route('/api/room/<room_code>')
-def button_state(room_code):
+def get_room(room_code):
     if room_code not in rooms:
         return jsonify({"error": "Комната не найдена"}), 404
-    return jsonify({'board': rooms[room_code]['board']})
+    room = rooms[room_code]
+    return jsonify({
+        'board': room['board'],
+        'current_turn': room['current_turn']
+    })
 
 
 @app.route('/api/room/<room_code>', methods=['POST'])
@@ -98,10 +106,6 @@ def toggle_button(room_code):
     rooms[room_code]['board'] = not rooms[room_code]['board']
     save_rooms()
     return jsonify({'board': rooms[room_code]['board']})
-
-
-from flask import session
-import uuid
 
 
 @app.route('/room/<room_code>')
@@ -139,7 +143,8 @@ def room(room_code):
             '''
 
     player_symbol = room['players'][player_id]
-    return render_template('krestikiNoliki.html', room_code=room_code)
+    return render_template('krestikiNoliki.html', room_code=room_code, player_symbol=player_symbol)
+
 
 @app.route('/api/room/<room_code>/move', methods=['POST'])
 def make_move(room_code):
@@ -147,25 +152,49 @@ def make_move(room_code):
         return jsonify({"error": "Комната не найдена"}), 404
 
     data = request.get_json()
-    index1 = data.get('index')
+    index = data.get('index')
     symbol = data.get('symbol')
 
-    if index1 is None or symbol not in ['X', '0']:
+    if index is None or symbol not in ['X', 'O']:
         return jsonify({"error": "Неверные данные"}), 400
 
-    row, col = divmod(index1, 3)
+    if not 0 <= index <= 8:
+        return jsonify({"error": "Неверный индекс"}), 400
+
+    row = index // 3
+    col = index % 3
     board = rooms[room_code]['board']
+    current_turn = rooms[room_code]['current_turn']
 
     if board[row][col] != '':
         return jsonify({"error": "Ячейка уже занята"}), 400
 
+    if symbol != current_turn:
+        return jsonify({"error": "Неверный ход"}), 400
+
     board[row][col] = symbol
+    rooms[room_code]['current_turn'] = 'O' if symbol == 'X' else 'X'
     save_rooms()
 
-    # Проверяем победу
-    if chek(room_code):
-        winner = symbol
-    else:
-        winner = None
+    winner = symbol if chek(room_code) else None
 
-    return jsonify({'board': board, 'winner': winner})
+    return jsonify({
+        'board': board,
+        'winner': winner,
+        'current_turn': rooms[room_code]['current_turn']
+    })
+
+
+@app.route('/api/room/<room_code>/reset', methods=['POST'])
+def reset_room(room_code):
+    if room_code not in rooms:
+        return jsonify({"error": "Комната не найдена"}), 404
+
+    rooms[room_code]['board'] = [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+    ]
+    rooms[room_code]['current_turn'] = 'X'
+    save_rooms()
+    return jsonify({"message": "Игра сброшена"})

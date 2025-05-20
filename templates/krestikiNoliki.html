@@ -8,9 +8,12 @@
 </head>
 <body>
     <h1>{{ room_code }}</h1>
+    <p>Твой символ: {{ player_symbol }}</p>
+    <p id="info" >инфо</p>
     <a href="/"><button class="leave">Leave</button></a>
-    <div id="game" data-room-code="{{ room_code }}">
+    <div id="game" data-room-code="{{ room_code }}" data-player-symbol="{{ player_symbol }}">
         <div class="value" id="board">
+            <div class="slot" data-num="0" data-value=""></div>
             <div class="slot" data-num="1" data-value=""></div>
             <div class="slot" data-num="2" data-value=""></div>
             <div class="slot" data-num="3" data-value=""></div>
@@ -19,8 +22,8 @@
             <div class="slot" data-num="6" data-value=""></div>
             <div class="slot" data-num="7" data-value=""></div>
             <div class="slot" data-num="8" data-value=""></div>
-            <div class="slot" data-num="9" data-value=""></div>
         </div>
+        <button id="reset-btn" style=" margin-top: 10px;" class="leave">Начать заново</button>
     </div>
     <script src="{{ url_for('static', filename='js/krestikiNoliki.js') }}"></script>
 </body>

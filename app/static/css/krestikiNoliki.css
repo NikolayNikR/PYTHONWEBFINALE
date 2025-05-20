@@ -2,7 +2,7 @@
 
 .value{
     margin-left: 40%;
-    margin-top: 10%;
+    margin-top: 5%;
     display: grid;
     grid-template-columns: 100px 100px 100px;
     grid-template-rows: 100px 100px 100px;
@@ -21,7 +21,7 @@
 }
 
 .leave{
-    margin-top: 5%;
+    margin-top: 3%;
     margin-left:46%;
     width: 115px;
     position: relative;
